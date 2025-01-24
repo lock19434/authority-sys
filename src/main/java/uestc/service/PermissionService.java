@@ -1,6 +1,6 @@
 package uestc.service;
 
-import uestc.entity.Department;
+import uestc.entity.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author liulong
  * @since 2025-01-25
  */
-public interface IDepartmentService extends IService<Department> {
+public interface PermissionService extends IService<Permission> {
 
 }

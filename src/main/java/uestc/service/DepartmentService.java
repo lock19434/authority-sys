@@ -1,6 +1,6 @@
 package uestc.service;
 
-import uestc.entity.Role;
+import uestc.entity.Department;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author liulong
  * @since 2025-01-25
  */
-public interface IRoleService extends IService<Role> {
+public interface DepartmentService extends IService<Department> {
 
 }

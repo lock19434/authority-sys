@@ -75,6 +75,8 @@ public class CodeGenerator {
 
                         // Service 策略配置
                         .serviceBuilder()
+                        .formatServiceFileName("%sService")
+                        .formatServiceImplFileName("%sServiceImp")
 
                         // Mapper 策略配置
                         .mapperBuilder()

@@ -1,8 +1,8 @@
 package uestc.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import uestc.entity.User;
-import uestc.mapper.UserMapper;
+import uestc.entity.Role;
+import uestc.mapper.RoleMapper;
+import uestc.service.RoleService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2025-01-25
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IService<User> {
+public class RoleServiceImp extends ServiceImpl<RoleMapper, Role> implements RoleService {
 
 }

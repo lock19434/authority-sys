@@ -11,10 +11,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 /**
- * <p>
- * 
- * </p>
- *
  * @author liulong
  * @since 2025-01-25
  */
