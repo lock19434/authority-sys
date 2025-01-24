@@ -5,6 +5,7 @@ import uestc.entity.User;
 import uestc.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import uestc.service.UserService;
 
 /**
  * <p>
@@ -15,6 +16,6 @@ import org.springframework.stereotype.Service;
  * @since 2025-01-25
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IService<User> {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
 }

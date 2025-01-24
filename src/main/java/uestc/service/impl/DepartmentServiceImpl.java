@@ -1,8 +1,8 @@
 package uestc.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import uestc.entity.Department;
 import uestc.mapper.DepartmentMapper;
+import uestc.service.DepartmentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2025-01-25
  */
 @Service
-public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Department> implements IService<Department> {
+public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Department> implements DepartmentService {
 
 }

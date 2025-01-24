@@ -5,6 +5,7 @@ import uestc.entity.Role;
 import uestc.mapper.RoleMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import uestc.service.RoleService;
 
 /**
  * <p>
@@ -15,6 +16,6 @@ import org.springframework.stereotype.Service;
  * @since 2025-01-25
  */
 @Service
-public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IService<Role> {
+public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
 
 }
