@@ -19,7 +19,9 @@ public class CodeGenerator {
     private static final String username = "root";
     private static final String password = "88888888";
     private static final String author = "liulong";
+    private static final String commentData = "yyyy-MM-dd";
     private static final String projectPath = System.getProperty("user.dir"); //获取当前项目路径
+    private static final String parentPackage = "uestc";
 
     public static void main(String[] args) {
         FastAutoGenerator.create(url, username, password)
