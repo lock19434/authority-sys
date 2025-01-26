@@ -1,11 +1,10 @@
 package uestc.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import uestc.entity.Permission;
 import uestc.mapper.PermissionMapper;
+import uestc.service.PermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import uestc.service.PermissionService;
 
 /**
  * <p>
@@ -16,6 +15,6 @@ import uestc.service.PermissionService;
  * @since 2025-01-25
  */
 @Service
-public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
+public class PermissionServiceImp extends ServiceImpl<PermissionMapper, Permission> implements PermissionService {
 
 }

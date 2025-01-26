@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2025-01-25
  */
 @Service
-public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Department> implements DepartmentService {
+public class DepartmentServiceImp extends ServiceImpl<DepartmentMapper, Department> implements DepartmentService {
 
 }
