@@ -7,10 +7,16 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 /**
  * @author liulong
  * @since 2025-01-25
@@ -19,7 +25,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @TableName("sys_user")
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -42,26 +48,26 @@ public class User implements Serializable {
     /**
      * 账户是否过期
      */
-    @TableField("is_account")
-    private Integer isAccount;
+    @TableField("is_account_non_expired")
+    private boolean isAccountNonExpired;
 
     /**
      * 账户是否被锁定
      */
-    @TableField("is_account_lock")
-    private Integer isAccountLock;
+    @TableField("is_account_non_locked")
+    private boolean isAccountNonLocked;
 
     /**
      * 密码是否过期
      */
-    @TableField("is_credentials_expire")
-    private Integer isCredentialsExpire;
+    @TableField("is_credentials_non_expired")
+    private boolean isCredentialsNonExpired;
 
     /**
      * 账户是否可用
      */
     @TableField("is_enabled")
-    private Integer isEnabled;
+    private boolean isEnabled;
 
     /**
      * 真实姓名
@@ -134,4 +140,57 @@ public class User implements Serializable {
      */
     @TableField("is_delete")
     private Integer isDelete;
+
+    /**
+     * 权限列表 就是菜单列表
+     */
+    @TableField(exist = false)
+    private List<Permission> permissionList;
+    /**
+     * 认证信息 就是用户配置code
+     */
+    @TableField(exist = false)
+    Collection<? extends GrantedAuthority> authorities;
+
+    /**
+     * 用户权限信息
+     */
+    @TableField(exist = false)
+    private List<String> roles;
+
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username;
+    }
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return this.isAccountNonExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.isAccountNonLocked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return this.isCredentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isEnabled;
+    }
 }
