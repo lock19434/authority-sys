@@ -11,6 +11,10 @@ spring:
     username: root
     password: 88888888
 
+  devtools:
+    restart:
+      enabled: false
+
 mybatis-plus:
   global-config:
     db-config:

@@ -1,5 +1,6 @@
 package uestc.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import uestc.entity.User;
 import uestc.mapper.UserMapper;
 import uestc.service.UserService;
@@ -17,4 +18,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImp extends ServiceImpl<UserMapper, User> implements UserService {
 
+    @Override
+    public User findUserByUserName(String userName) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("username", userName);
+        return baseMapper.selectOne(queryWrapper);
+    }
 }
