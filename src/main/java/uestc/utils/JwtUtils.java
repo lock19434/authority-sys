@@ -1,18 +1,21 @@
 package uestc.utils;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import uestc.entity.User;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- *  JWT工具类
+ * JWT工具类
  */
 @Data
 @ConfigurationProperties(prefix = "jwt")
@@ -23,15 +26,23 @@ public class JwtUtils {
     private Long expiration;    // 过期时间
 
     /**
-     *  从数据声明生成Token令牌
+     * 获取签名密钥
+     */
+    private SecretKey getSigningKey() {
+        // 使用 HS256 算法生成密钥
+        return Jwts.SIG.HS256.key().build();
+    }
+
+    /**
+     * 从数据声明生成Token令牌
      */
     private String generateToken(Map<String, Object> claims) {
-        Date expirationDate = new Date(System.currentTimeMillis() + this.expiration);
-        return Jwts
-                .builder()
-                .setClaims(claims)
-                .setExpiration(expirationDate)
-                .signWith(SignatureAlgorithm.ES512, this.secret)
+        Date expirationDate = new Date(System.currentTimeMillis() + expiration);
+        return Jwts.builder()
+                .claims(claims)
+                .issuedAt(new Date())
+                .expiration(expirationDate)
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -39,33 +50,31 @@ public class JwtUtils {
      * 从令牌中获取数据声明
      */
     public Claims getClaimsFormToken(String token) {
-        Claims claims;
         try {
-            claims = Jwts
-                    .parser()
-                    .setSigningKey(this.secret)
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            claims = null;
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+        } catch (JwtException | IllegalArgumentException e) {
+            return null;
         }
-
-        return claims;
-    }
-
-    public String getUsernameFromToken(String token) {
-        String username = null;
-        try {
-            Claims claims = getClaimsFormToken(token);
-            username = claims.getSubject();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return username;
     }
 
     /**
-     *  生成令牌
+     * 从令牌中获取用户名
+     */
+    public String getUsernameFromToken(String token) {
+        try {
+            Claims claims = getClaimsFormToken(token);
+            return claims != null ? claims.getSubject() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 生成令牌
      */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>(2);
@@ -78,33 +87,45 @@ public class JwtUtils {
      * 刷新令牌
      */
     public String refreshToken(String token) {
-        String refreshedToken;
         try {
             Claims claims = getClaimsFormToken(token);
+            if (claims == null) {
+                return null;
+            }
             claims.put(Claims.ISSUED_AT, new Date());
-            refreshedToken = generateToken(claims);
+            return generateToken(claims);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return null;
         }
-        return refreshedToken;
     }
 
     /**
      * 判断令牌是否过期
      */
     public Boolean isTokenExpired(String token) {
-        Claims claims = getClaimsFormToken(token);
-        Date expiration = claims.getExpiration();
-        return  expiration.before(new Date());
+        try {
+            Claims claims = getClaimsFormToken(token);
+            if (claims == null) {
+                return true;
+            }
+            Date expiration = claims.getExpiration();
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     /**
      * 验证令牌
      */
     public Boolean validateToken(String token, UserDetails userDetails) {
-        User user = (User) userDetails;
-        String username = getUsernameFromToken(token);
-        return username.equals(user.getUsername()) && !isTokenExpired(token);
-    }
+        if (!(userDetails instanceof User)) {
+            return false;
+        }
 
+        String username = getUsernameFromToken(token);
+        return username != null &&
+                username.equals(userDetails.getUsername()) &&
+                !isTokenExpired(token);
+    }
 }

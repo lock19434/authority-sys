@@ -15,6 +15,10 @@ spring:
     restart:
       enabled: false
 
+jwt:
+  secret: uestc-lock
+  expiration: 1800000
+
 mybatis-plus:
   global-config:
     db-config:
