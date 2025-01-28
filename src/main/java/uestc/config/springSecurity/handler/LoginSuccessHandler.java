@@ -2,8 +2,6 @@ package uestc.config.springSecurity.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.annotation.Resource;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +16,6 @@ import uestc.utils.ResultCode;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 /**
  * 登录认证成功处理器（适配 jjwt 0.12.5）
@@ -34,11 +31,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setContentType("application/json;charset=utf-8");
         User user = (User) authentication.getPrincipal();
 
-        // 生成 Token（通过改造后的 JwtUtils）
+        // 生成 Token
         String token = jwtUtils.generateToken(user);
 
-        // 解析 Token 获取过期时间（使用新 API）
-        long expireTime = parseTokenExpiration(token);
+        // 获取过期时间
+        long expireTime = System.currentTimeMillis() + jwtUtils.getExpiration();
 
         // 构造返回结果
         LoginResult loginResult = new LoginResult(
@@ -59,19 +56,4 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         }
     }
 
-    /**
-     * 解析 Token 获取过期时间（适配新版本 API）
-     */
-    private long parseTokenExpiration(String token) {
-        Claims claims;
-        try {
-            claims = jwtUtils.getClaimsFormToken(token);
-            if (claims != null) {
-                Date expiration = claims.getExpiration();
-                return expiration != null ? expiration.getTime() : 0;
-            }
-        } catch (JwtException | IllegalArgumentException ignored) {
-        }
-        return 0;
-    }
 }
