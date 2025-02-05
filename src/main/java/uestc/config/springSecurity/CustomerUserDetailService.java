@@ -15,7 +15,6 @@ import uestc.service.UserService;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  *  用户认证处理器类
@@ -40,9 +39,8 @@ public class CustomerUserDetailService implements UserDetailsService {
 
         // 获取权限列表
         List<String> codeList = permissionListByUserId.stream()
-                .filter(Objects::isNull).filter(obj -> false)
-                .map(Permission::getCode)
-                .filter(Objects::isNull)
+                .map(Permission::getCode) // 提取权限编码
+                .filter(Objects::nonNull) // 过滤掉空编码
                 .toList();
         String[] codeListArray = codeList.toArray(new String[0]);
         List<GrantedAuthority> authorityList = AuthorityUtils.createAuthorityList(codeListArray);

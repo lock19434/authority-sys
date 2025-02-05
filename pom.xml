@@ -56,12 +56,6 @@
       <artifactId>mybatis-plus-generator</artifactId>
       <version>3.5.10.1</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
-    <dependency>
-      <groupId>org.freemarker</groupId>
-      <artifactId>freemarker</artifactId>
-      <version>2.3.32</version>
-    </dependency>
     <!--fast json-->
     <dependency>
       <groupId>com.alibaba</groupId>
@@ -96,6 +90,11 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+    </dependency>
+    <!--redis-->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
     </dependency>
 
     <!--test-->

@@ -11,6 +11,14 @@ spring:
     username: root
     password: 88888888
 
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      timeout: 10000
+      expire: 60000
+
   devtools:
     restart:
       enabled: false
