@@ -5,15 +5,15 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 /**
- * <p>
- * 
- * </p>
- *
  * @author liulong
  * @since 2025-01-25
  */
@@ -105,4 +105,17 @@ public class Permission implements Serializable {
      */
     @TableField("is_delete")
     private Integer isDelete;
+
+    /**
+     *  子菜单列表
+     */
+    @JsonInclude(JsonInclude.Include.NON_NULL) // 属性为null 不进行序列化操作
+    @TableField(exist = false)
+    private List<Permission> children = new ArrayList<>();
+
+    @TableField(exist = false)
+    private String value; // 用于前端来进行判断当前是目录，菜单，还是按钮。
+
+    @TableField(exist = false)
+    private Boolean open; // 是否展开
 }
