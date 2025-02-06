@@ -3,13 +3,16 @@ package uestc.utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import uestc.entity.User;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,8 +32,13 @@ public class JwtUtils {
      * 获取签名密钥
      */
     private SecretKey getSigningKey() {
-        // 使用 HS256 算法生成密钥
-        return Jwts.SIG.HS256.key().build();
+        // 使用重复填充的方式达到所需长度
+        byte[] keyBytes = new byte[32]; // 256 bits
+        byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
+        for (int i = 0; i < keyBytes.length; i++) {
+            keyBytes[i] = secretBytes[i % secretBytes.length];
+        }
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     /**
@@ -49,7 +57,7 @@ public class JwtUtils {
     /**
      * 从令牌中获取数据声明
      */
-    public Claims getClaimsFormToken(String token) {
+    public Claims getClaimsFromToken(String token) {
         try {
             return Jwts.parser()
                     .verifyWith(getSigningKey())
@@ -65,21 +73,16 @@ public class JwtUtils {
      * 从令牌中获取用户名
      */
     public String getUsernameFromToken(String token) {
-        try {
-            Claims claims = getClaimsFormToken(token);
-            return claims != null ? claims.getSubject() : null;
-        } catch (Exception e) {
-            return null;
-        }
+        Claims claims = getClaimsFromToken(token);
+        return (claims != null) ? claims.getSubject() : null;
     }
 
     /**
      * 生成令牌
      */
     public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>(2);
+        Map<String, Object> claims = new HashMap<>(1);
         claims.put(Claims.SUBJECT, userDetails.getUsername());
-        claims.put(Claims.ISSUED_AT, new Date());
         return generateToken(claims);
     }
 
@@ -88,7 +91,7 @@ public class JwtUtils {
      */
     public String refreshToken(String token) {
         try {
-            Claims claims = getClaimsFormToken(token);
+            Claims claims = getClaimsFromToken(token);
             if (claims == null) {
                 return null;
             }
@@ -104,7 +107,7 @@ public class JwtUtils {
      */
     public Boolean isTokenExpired(String token) {
         try {
-            Claims claims = getClaimsFormToken(token);
+            Claims claims = getClaimsFromToken(token);
             if (claims == null) {
                 return true;
             }

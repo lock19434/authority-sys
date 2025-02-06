@@ -3,6 +3,10 @@ server:
   servlet:
     context-path: /
 
+request:
+  login:
+    url: /user/login
+
 spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource

@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import uestc.config.redis.RedisService;
 import uestc.entity.User;
 import uestc.utils.JwtUtils;
 import uestc.utils.LoginResult;
@@ -25,6 +26,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Resource
     private JwtUtils jwtUtils;
+    @Resource
+    private RedisService redisService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -54,6 +57,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
             outputStream.write(jsonResult.getBytes(StandardCharsets.UTF_8));
             outputStream.flush();
         }
+        // 将token信息保存到redis中
+        String tokenKey = "token_" + token;
+        redisService.set(tokenKey, token, jwtUtils.getExpiration()/1000);
     }
 
 }

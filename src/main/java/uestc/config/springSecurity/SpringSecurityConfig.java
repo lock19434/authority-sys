@@ -12,9 +12,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import uestc.config.springSecurity.filter.CheckTokenFilter;
 import uestc.config.springSecurity.handler.AnonymousAuthenticationHandler;
 import uestc.config.springSecurity.handler.CustomerAccessDeniedHandler;
 import uestc.config.springSecurity.handler.LoginFailureHandler;
@@ -37,6 +39,8 @@ public class SpringSecurityConfig {
     private CustomerAccessDeniedHandler customerAccessDeniedHandler;
     @Resource
     private AnonymousAuthenticationHandler anonymousAuthenticationHandler;
+    @Resource
+    private CheckTokenFilter checkTokenFilter;
 
     /**
      *  密码加密
@@ -74,6 +78,9 @@ public class SpringSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        // 登录前进行过滤
+        http.addFilterBefore(checkTokenFilter, UsernamePasswordAuthenticationFilter.class);
         http
                 .userDetailsService(customerUserDetailsService)
                 .authorizeHttpRequests(auth -> auth

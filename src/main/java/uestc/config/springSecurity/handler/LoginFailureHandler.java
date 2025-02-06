@@ -9,6 +9,7 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
+import uestc.config.springSecurity.exception.CustomerAuthenticationException;
 import uestc.utils.Result;
 import uestc.utils.ResultCode;
 
@@ -39,6 +40,8 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
             message = "账户被锁，登录失效！";
         } else if (exception instanceof InternalAuthenticationServiceException) {
             message = "账户不存在！！";
+        } else if (exception instanceof CustomerAuthenticationException) {
+            message = "token不存在！！";
         } else {
             message = "登录失败！";
         }
