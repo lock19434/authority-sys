@@ -40,6 +40,7 @@ public class MenuTree {
                     routerVo.setMeta(meta);
                     // 递归生成路由
                     List<RouterVo> children = makeRouter(menuList, item.getId());
+                    routerVo.setChildren(children);
                     routerVoList.add(routerVo);
                 });
         return routerVoList;
