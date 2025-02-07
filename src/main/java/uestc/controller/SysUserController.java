@@ -9,15 +9,24 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.token.TokenService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uestc.config.redis.RedisService;
+import uestc.entity.Permission;
+import uestc.entity.User;
+import uestc.entity.UserInfo;
 import uestc.utils.JwtUtils;
+import uestc.utils.MenuTree;
 import uestc.utils.Result;
+import uestc.vo.RouterVo;
 import uestc.vo.TokenVo;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/sysUser")
@@ -63,6 +72,48 @@ public class SysUserController {
         TokenVo tokenVo = new TokenVo(expiration.getTime(), newToken);
         return Result.ok(tokenVo).message("token刷新成功！");
 
+    }
+
+    @GetMapping("/getInfo")
+    public Result<UserInfo> getUserInfo() {
+        // 从spring security中获取用户信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (ObjectUtils.isEmpty(authentication)) {
+            return Result.<UserInfo>error().message("用户查询失败！");
+        }
+        // 获取用户信息
+        User user = (User) authentication.getPrincipal();
+        // 获取权限列表
+        List<Permission> permissionList = user.getPermissionList();
+        // 获取角色权限编码字段
+        Object[] roles = permissionList.stream()
+                .filter(Objects::nonNull)        // 过滤掉 null 元素
+                .map(Permission::getCode)        // 获取权限编码
+                .toArray();
+        // 创建用户信息对象
+        UserInfo userInfo = new UserInfo(user.getId(), user.getNickName(), user.getAvatar(), null, roles);
+        return Result.ok(userInfo).message("用户信息查询成功！");
+    }
+
+    @GetMapping("/getMenuList")
+    public Result<List<RouterVo>> getMenuList() {
+        // 从spring security中获取用户信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (ObjectUtils.isEmpty(authentication)) {
+            return Result.<List<RouterVo>>error().message("用户查询失败！");
+        }
+        // 获取用户信息
+        User user = (User) authentication.getPrincipal();
+        // 获取用户权限
+        List<Permission> permissionList = user.getPermissionList();
+        // 筛选目录和菜单
+        List<Permission> collect = permissionList.stream()
+                .filter(item -> item!=null && item.getType() != 2)
+                .toList();
+        // 生成路由数据
+        List<RouterVo> routerVoList = MenuTree.makeRouter(collect, 0L);
+        // 返回数据
+        return Result.ok(routerVoList).message("菜单数据获取成功！");
     }
 
 }
